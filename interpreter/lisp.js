@@ -104,6 +104,37 @@ LISP.Lambda = function(args, body, defined_env) {
   this.to_s = function() { return "&lt;Userdefined Function&gt;" };
 };
 
+LISP.Vector = function(array) {
+    this.value = array;
+    this.to_s = function() { return JSON.stringify(array); };
+    this.type = "Vector";
+};
+
+LISP.DomNode = function(dom) {
+    this.value = dom;
+    this.to_s = function() { return "&lt;" + dom.nodeName + " Element&gt;"; };
+    this.type = "DOM";
+};
+
+LISP.jQueryObject = function(jquery) {
+    this.value = jquery;
+    this.to_s = function() { return "&lt;jQuery('" + jquery.selector + "')&gt;"; };
+    this.type = "jQuery";
+};
+
+LISP.JavaScriptFunction = function(fun) {
+    this.value = fun;
+    this.to_s = function() { return "&lt;Javascript Function&gt;"; };
+    this.type = "Function";
+};
+
+LISP.Object = function(object) {
+    this.value = object;
+    this.to_s = function() { return "&lt;Object&gt;"; };
+    this.type = "Object";
+};
+
+
 LISP.Macro = function(args, body) {
   this.args = args;
   this.body = body;

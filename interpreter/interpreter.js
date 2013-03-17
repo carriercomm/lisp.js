@@ -1,9 +1,9 @@
-var Interpreter = (function() {
+var Interpreter = function(options) {
   
   // The top-environment
   var __GLOBAL__;
   
-  var configs = {
+  var configs = $.extend({
     
     worker: false,
     
@@ -15,7 +15,7 @@ var Interpreter = (function() {
     // time to wait, until continuing
     wait: 25
   
-  };
+  }, options || {});
   
   var builtins = {
          
@@ -185,8 +185,13 @@ var Interpreter = (function() {
       if(first_arg instanceof LISP.Pair) {
         var key = first_arg.first().value,
             body = list.rest(),
+            maybeDoc = body.first(),
             lambda = new LISP.Lambda(first_arg.rest(), body, cont.env);
-            
+        
+        if (maybeDoc instanceof LISP.String) {
+            lambda.__doc__ = maybeDoc;
+        }
+
         cont.env.set(key, lambda);
         return cont(lambda); 
       
@@ -721,7 +726,16 @@ var Interpreter = (function() {
   __GLOBAL__ = LISP.Environment(null).set(builtins);    
   
   return {
-    
+    'macro': function(name, fun) {
+        return this.set(name, LISP.Builtin(fun));
+    },
+    'get': function(name) {
+        return __GLOBAL__.get(name);
+    },
+    'set': function(name, value) {
+        __GLOBAL__.set(name, value);
+        return value;
+    },
     // just takes one command and interprets it
     'go': function(string) {    
       var cont = LISP.Continuation(Parser(string).read(), __GLOBAL__, function(results) { return LISP.Result(results); });
@@ -784,4 +798,4 @@ var Interpreter = (function() {
   
   };
   
-})();
+}

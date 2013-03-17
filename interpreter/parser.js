@@ -67,9 +67,18 @@ var Parser = function(string) {
      
     return new LISP.BackQuote(read());  
   }
+
+  function readRawString() {
+    var stringValue = scanner.consume('"').until('"');
+    if (stringValue[stringValue.length-1] == '\\' && scanner.peek() == '"') {
+        return stringValue + '"' + readRawString();
+    } else {
+        return stringValue;
+    }
+  }
   
   function readString() {
-    var stringValue = scanner.consume('"').until('"');    
+    var stringValue = readRawString();
     scanner.consume('"');
     return new LISP.String(stringValue);
   }
